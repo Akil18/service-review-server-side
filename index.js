@@ -20,8 +20,17 @@ const client = new MongoClient(uri, {
 async function run() {
    try {
       const servicesCollection = client.db("schemeCtg").collection("services");
+      const usersCollection = client.db("schemeCtg").collection("users");
+      const reviewsCollection = client.db("schemeCtg").collection("reviews");
 
       // GET
+      app.get("/servicesinHome", async (req, res) => {
+         const query = {};
+         const cursor = servicesCollection.find(query).limit(3);
+         const services = await cursor.toArray();
+         res.send(services);
+      });
+
       app.get("/services", async (req, res) => {
          const query = {};
          const cursor = servicesCollection.find(query);
@@ -35,6 +44,20 @@ async function run() {
          console.log(query);
          const service = await servicesCollection.findOne(query);
          res.send(service);
+      });
+
+      app.get("/users", async (req, res) => {
+         const query = {};
+         const cursor = usersCollection.find(query);
+         const users = await cursor.toArray();
+         res.send(users);
+      });
+
+      // POST
+      app.post("/users", async (req, res) => {
+         const user = req.body;
+         const result = await usersCollection.insertOne(user);
+         res.send(result);
       });
    } finally {
    }
