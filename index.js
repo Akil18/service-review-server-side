@@ -10,7 +10,6 @@ app.use(cors());
 app.use(express.json());
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.nvyyp05.mongodb.net/?retryWrites=true&w=majority`;
-console.log(uri);
 const client = new MongoClient(uri, {
    useNewUrlParser: true,
    useUnifiedTopology: true,
@@ -53,8 +52,13 @@ async function run() {
          res.send(users);
       });
 
+      // CONDITIONAL GET
       app.get("/reviews", async (req, res) => {
-         const query = {};
+         console.log(req.query.email);
+         let query = {};
+         if (req.query.email) {
+            query = { email: req.query.email };
+         }
          const cursor = reviewsCollection.find(query);
          const reviews = await cursor.toArray();
          res.send(reviews);
@@ -72,7 +76,17 @@ async function run() {
          const result = await reviewsCollection.insertOne(review);
          res.send(result);
       });
-   } finally {
+
+      // DELETE
+      app.delete("/reviews/:id", async (req, res) => {
+         const id = req.params.id;
+         const query = { _id: ObjectId(id) };
+         const result = await reviewsCollection.deleteOne(query);
+         res.send(result);
+      });
+
+   } 
+   finally {
    }
 }
 
