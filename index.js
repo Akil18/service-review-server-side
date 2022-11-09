@@ -59,6 +59,9 @@ async function run() {
          if (req.query.email) {
             query = { email: req.query.email };
          }
+         if (req.query.serviceId) {
+            query = { serviceId: req.query.serviceId };
+         }
          const cursor = reviewsCollection.find(query);
          const reviews = await cursor.toArray();
          res.send(reviews);
@@ -74,6 +77,12 @@ async function run() {
       app.post("/reviews", async (req, res) => {
          const review = req.body;
          const result = await reviewsCollection.insertOne(review);
+         res.send(result);
+      });
+      
+      app.post("/services", async (req, res) => {
+         const service = req.body;
+         const result = await servicesCollection.insertOne(service);
          res.send(result);
       });
 
